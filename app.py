@@ -5,29 +5,29 @@ import plotly.express as px
 
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
-ALLOWED_TYPES = ("track_name")
+ALLOWED_TYPES = (["track_name"])
 app.title = "Music Recommender"
 
 
-app.layout = html.Div([
+app.layout = html.Div(
+    [
     html.H1("Music Recommender and EDA", className="text-center my-4"),
 
     dcc.Tabs(id="tabs", value='tab-info', children=[
         dcc.Tab(label='Music Recommender', value='tab-recommender'),
-        dcc.Tab(label='Spotify Dataset EDA', value='tab-eda'),
-    ]),
-
+        dcc.Tab(label='Spotify Dataset EDA', value='tab-eda')]),      
+       
     html.Div(id='tab-content'),
-     dcc.Input(
-            id="input_{}".format(_),
-            type=_,
-            placeholder="input type {}".format(_),
-        )
-        for _ in ALLOWED_TYPES
-    ]
-    + [html.Div(id="out-all-types")
-], 
+    
+    dcc.Input(
+        id="input_{}".format(),
+        type=_,
+        placeholder="input type {}".format(_),
+    )
+    for _ in ALLOWED_TYPES
 
+
+    ]+[html.Div(id="out-all-types")],
 style={"marginLeft": "30px", "marginRight": "30px"})
 
 
