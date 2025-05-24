@@ -9,8 +9,7 @@ ALLOWED_TYPES = (["track_name"])
 app.title = "Music Recommender"
 
 
-app.layout = html.Div(
-    [
+app.layout = html.Div([
     html.H1("Music Recommender and EDA", className="text-center my-4"),
 
     dcc.Tabs(id="tabs", value='tab-info', children=[
@@ -19,16 +18,15 @@ app.layout = html.Div(
        
     html.Div(id='tab-content'),
     
-    dcc.Input(
-        id="input_{}".format(),
-        type=_,
-        placeholder="input type {}".format(_),
-    )
-    for _ in ALLOWED_TYPES
+  dcc.Input(
+      id="song_input",
+      type='text',
+      placeholder='song name'
+  )
 
 
-    ]+[html.Div(id="out-all-types")],
-style={"marginLeft": "30px", "marginRight": "30px"})
+    
+],style={"marginLeft": "30px", "marginRight": "30px"})
 
 
 
@@ -38,7 +36,14 @@ def render_tab(tab):
         return html.Div([
             dbc.Row([
                 dbc.Col([
+                        dcc.Input(
+                            id="song_name",
+                            type="text",
+                            placeholder="song name",
+                            style={"text-center"}),
 
+    
+    html.Div(id="output"),
                 ])
             ])
         ])
@@ -60,4 +65,4 @@ def cb_render(*vals):
 
 
 if __name__== "__main__":
-    app.run_server(debug=True)
+    app.run(debug=True)
