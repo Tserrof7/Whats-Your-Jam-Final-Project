@@ -46,6 +46,8 @@ A lightweight **Streamlit** dashboard that displays song recommendations powered
    streamlit run dashboard.py
    ```
    Ensure you have an active Spotify device ready, then use the Play buttons to trigger playback.
+   Streamlit expects to run a plain Python script using the command streamlit run dashboard.py. 
+   Notebooks contain extra metadata and are designed for interactive exploration, not for serving as production web apps.
 
 ## Project Structure
 
