@@ -18,10 +18,13 @@ app.layout = html.Div([
        
     html.Div(id='tab-content'),
     
-  dcc.Input(
+
+    html.Div(
+        dcc.Input(
       id="song_input",
       type='text',
       placeholder='song name'
+        )
   )
 
 
@@ -49,8 +52,16 @@ def render_tab(tab):
         ])
     elif tab == 'tab-eda':
         return html.Div([
-            dbc.Col([
-                
+            dbc.Row([
+                dbc.Col([
+                    dbc.Carousel(
+                        items=[
+                            {"key":"1","src":"assets/insert_image_path", "caption":"insert caption", "img_style":{"max-height":"250"}},
+                             {"key":"2","src":"assets/insert_image_path",
+                             "header":"insert header","caption":"insert caption","img_style":{"max_height":"250"} }
+                        ]
+                    )
+                 ])
             ])
         ])
 
