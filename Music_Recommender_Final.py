@@ -24,6 +24,38 @@ from xgboost import XGBClassifier
 # Load Dataset
 df = pd.read_csv("resources/SpotifyFeatures.csv")
 
+# """ import psycopg2 - this is not used in the final application, but built in and tested working
+# import pandas as pd
+
+# # Connect to PostgreSQL database
+# conn = psycopg2.connect(
+#     host="localhost",
+#     port="5432",
+#     database="SPOTIFY",
+#     user="postgres",
+#     password="1970"
+# )
+
+# # Fetch data directly into Pandas
+# query = "SELECT * FROM spotifyfeatures"
+# df_sample = pd.read_sql(query, conn)
+# conn.close()
+
+# print("Data retrieved successfully!")
+#  """
+# # SQLAlchemy to connect to PostgreSQL
+# from sqlalchemy import create_engine
+# import pandas as pd
+
+# # Create PostgreSQL connection using SQLAlchemy
+# engine = create_engine("postgresql://postgres:1970@localhost:5432/SPOTIFY")
+
+# # Fetch data using SQLAlchemy engine
+# query = "SELECT * FROM spotifyfeatures"
+# df_sample = pd.read_sql(query, engine)  # No warning now!
+
+# print("Data retrieved successfully!")
+
 # --- Data Preprocessing & Feature Selection ---
 df["mode"] = df["mode"].map({"Major": 1, "Minor": 0})  # Convert Major/Minor to numeric
 artist_encoder = LabelEncoder()
@@ -469,8 +501,18 @@ def render_tab(tab):
         #Adding carousel
         dbc.Carousel(
             items=[
-                {"key": "1", "src": "assets/1.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
-                {"key": "2", "src": "assets/2.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}}
+                {"key": "1", "src": "assets/Slides/1.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "2", "src": "assets/Slides/2.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "3", "src": "assets/Slides/3.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "4", "src": "assets/Slides/4.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "5", "src": "assets/Slides/5.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "6", "src": "assets/Slides/6.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "7", "src": "assets/Slides/7.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "8", "src": "assets/Slides/8.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "9", "src": "assets/Slides/9.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "10", "src": "assets/Slides/10.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "11", "src": "assets/Slides/11.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "12", "src": "assets/Slides/12.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
             ],
         className="d-flex justify-content-center"
         )

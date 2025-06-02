@@ -1,43 +1,53 @@
-# What's Your Jam Final Project
----------------------------------------------
+# What's Your Jam – Final Project
 
-**Overview**
-We decided to create a music recommender from a machine learning model trained on a data set that was publicly avaialable on kaggle, and pulled from the Spotify API. The idea behind this music recomender in particular is to recommend songs that may not be in the same genre, but share some of the same characteristics as one another. To do this, we built a KMeans machine learning model to create clusters of songs that are grouped together based on different features. This allows us to have an output of similar songs to any given input, so long as the chosen song is in the dataset. To make this an interactive experience for the user, we opted to use the Dash library for creating a Dashboard. The dataset is very comprehensive, containing a little over 232,000 songs, as well as many features about the songs. The songs features allow the model to more accurately predict how the songs are related to each other past just genre. The features are as follows: popularity, acousticness, danceability, duration_ms, energy, instrumentalness, key, liveness, loudness, mode, speechiness, tempo, time_signature, valence.
+## Overview
+This project builds a **music recommender system** using **machine learning**, trained on a dataset sourced from Kaggle and the **Spotify API**. Unlike traditional genre-based recommendations, this system suggests songs that **share similar characteristics**, even if they belong to different genres.
 
-The definitions for the features per the Spotify for Developers website:
+The approach centers around **K-Means clustering**, which groups songs based on musical attributes. Users can input a song, and the model will suggest **similar tracks**, provided the song exists in the dataset. To make the experience interactive, we implemented a **dashboard using Dash**, allowing users to explore and receive recommendations dynamically.
 
-Acousticness: A confidence measure from 0.0 to 1.0 of whether the track is acoustic. 1.0 represents high
-confidence the track is acoustic.
+The dataset includes **over 232,000 songs** with multiple **audio features** that improve song similarity analysis beyond just genre.
 
-Danceability: It describes how suitable a track is for dancing based on a combination of musical
-elements including tempo, rhythm stability, beat strength, and overall regularity. A value of 0.0 is least
-danceable and 1.0 is most danceable.
+## Features Used in the Model
+These song attributes are crucial in understanding **musical similarities** beyond genre:
+* **Popularity** – A song's ranking based on Spotify engagement
+* **Acousticness** – Probability of a track being acoustic (0.0 to 1.0)
+* **Danceability** – Suitability for dancing based on rhythm and tempo (0.0 to 1.0)
+* **Duration (ms)** – Track length in milliseconds
+* **Energy** – Intensity/activity level (0.0 to 1.0)
+* **Instrumentalness** – Likelihood of a song being purely instrumental
+* **Key** – The musical key the song is in
+* **Liveness** – Detects the presence of a live audience in a track
+* **Loudness** – Overall volume level in decibels
+* **Mode** – Musical mode (Major or Minor)
+* **Speechiness** – Measures spoken content (e.g., rap vs. instrumental)
+* **Tempo** – Beats per minute (BPM) of the track
+* **Time Signature** – The number of beats per measure
+* **Valence** – Measures positivity (happy vs. melancholic music)
 
-Duration_ms: The duration of the track in milliseconds
+Each of these features contributes to **clustering songs effectively** and enhancing recommendations.
 
-Energy: This is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity.
-Typically, energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a
-Bach prelude scores low on the scale. Perceptual features contributing to this attribute include dynamic
-range, perceived loudness, timbre, onset rate, and general entropy.
+## How the Model Works
+1. **Feature Extraction & Preprocessing** – The dataset is cleaned, missing values are handled, and numerical/categorical features are encoded. **Principal Component Analysis (PCA)** is used to simplify the data by reducing dimensionality before clustering.
+2. **K-Means Clustering** – Once features are processed, **K-Means groups songs** based on musical attributes to create meaningful clusters. This allows songs to be grouped according to **similar audio characteristics** rather than just genre labels.
+3. **Genre Classification Using Random Forest** – **Random Forest** is used to classify songs into genres, making predictions based on key song features such as danceability, energy, tempo, and valence. Since it is a supervised learning model, it requires labeled data to learn patterns and make accurate predictions.
+4. **Recommendation Engine** – When a user selects a song, the system retrieves **musically similar tracks** from the pre-trained clusters and genre classification results.
+5. **Dashboard Implementation** – Users interact with the model via a **Dash-powered web interface**, enabling song exploration and recommendations dynamically.
 
-Instrumentalness: Predicts whether a track contains no vocals. "Ooh" and "aah" sounds are treated as
-instrumental in this context. Rap or spoken word tracks are clearly "vocal". The closer the
-instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content. Values above
-0.5 are intended to represent instrumental tracks, but confidence is higher as the value approaches 1.0.
+## Machine Learning Techniques Used
+We are using **Random Forest, PCA, and K-Means** because each method serves a distinct purpose in the project.
+* **Random Forest** is used for **genre classification**, predicting which genre a song belongs to based on key musical features.
+* **PCA (Principal Component Analysis)** assists in **dimensionality reduction**, simplifying complex data while retaining important variance.
+* **K-Means Clustering** is responsible for **grouping similar songs**, helping generate personalized recommendations and playlists.
 
-Key: the key the track is in. Integers map to pitches using standard Pitch Class notation. If no key was detected, the value is -1.
+## How They Work Together
+1. **PCA & K-Means are applied for clustering**, identifying relationships between songs.
+2. **Random Forest is trained on the original (scaled) dataset**, ensuring accurate genre classification.
+3. **Cluster labels from K-Means can be used as additional features** in the classifier to refine predictions.
 
-Speechiness: It detects the presence of spoken words in a track. The more exclusively speech-like the
-recording (e.g. talk show, audio book, poetry), the closer to 1.0 the attribute value. Values above 0.66
-describe tracks that are probably made entirely of spoken words. Values between 0.33 and 0.66 describe
-tracks that may contain both music and speech, either in sections or layered, including such cases as rap
-music. Values below 0.33 most likely represent music and other non-speech-like tracks.
+This approach ensures **songs are classified effectively while also being grouped into meaningful clusters**, improving recommendations and analysis.
 
-Tempo: The overall estimated tempo of a track in beats per minute (BPM). In musical terminology, tempo is the speed or pace of a given piece and derives directly from the average beat duration.
-
-Time_signature: an estimated time signature. The time signature(meter) is a notation convention to specify how many beats are in each bar (or measure).
-
-Valence: A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).
-
-
-Forrest Margulies, Gurpreet Singh Badrani, Luis Lopez, Yue Deng
+## Team Members
+* **Forrest Margulies**
+* **Gurpreet Badrain**
+* **Luis Lopez**
+* **Yue Deng**

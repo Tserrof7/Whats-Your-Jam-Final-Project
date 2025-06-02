@@ -7,7 +7,9 @@ import umap
 import unicodedata
 import difflib
 import dash_bootstrap_components as dbc
-from dash import Dash, dcc, html, Input, Output, callback, State
+import os
+import base64
+from dash import Dash, dcc, html, Input, Output, callback, State, ALL, callback_context
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
@@ -387,25 +389,32 @@ def recommend_song(input_song, input_artist=None, cutoff=0.995, similarity_thres
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
 # # Load banner image (base64)
-# image_path = os.path.join(os.getcwd(), 'assets', 'banner.png')
-# app.title = "Music Recommender"
-# if os.path.exists(image_path):
-#     with open(image_path, 'rb') as img_file:
-#         encoded_image = base64.b64encode(img_file.read()).decode()
-#     img_component = html.Img(
-#         src=f'data:image/png;base64,{encoded_image}',
-#         style={
-#             'width': '100%',
-#             'height': 'auto',
-#             'marginBottom': '10px'
-#         }
-#     )
-# else:
-#     img_component = html.Div("Banner image not found.", style={'color': 'red', 'marginBottom': '10px'})
+image_path = os.path.join('resources', 'banner.png')
+# Initialize empty variable
+banner_img = None
+
+if os.path.exists(image_path):
+    with open(image_path, 'rb') as f:
+        encoded_image = base64.b64encode(f.read()).decode()
+
+    banner_img = html.Img(
+        src=f'data:image/png;base64,{encoded_image}',
+        style={
+            'width': '100%',
+            'height': 'auto',
+            'marginBottom': '1px'
+        }
+    )
+else:
+    banner_img = html.Div(
+        "Banner image not found.",
+        style={'color': 'red', 'marginBottom': '10px'}
+    )
 
 app.layout = dbc.Container([
     # img_component,
-    html.H1("🎵 Music Recommender 🎵", className="text-center my-4"),
+    banner_img,
+    html.H1(" ", className="text-center my-4"),
     
     # Tabs structure
     dcc.Tabs(id="tabs", value='tab-recommender', children=[
@@ -456,109 +465,135 @@ def render_tab(tab):
         ])
     elif tab == 'tab-eda':
         return html.Div([
-        html.H4("Spotify Dataset EDA Coming Soon"),
-        # Adding carousel
-        # dbc.Carousel(
-        #     items=[
-        #         {"key": "1", "src": "assets/Boston-cream-donut.png", "caption": "This is a Boston cream donut", "img_style": {"max-height": "500px"}},
-        #         {"key": "2", "src": "assets/assets/f8b76d1883e09d74.png", "header": "Minecraft skin", "caption": "This is my Minecraft skin", "img_style": {"max-height": "500px"}}
-        #     ]
-        # )
+        html.H4(" "),
+        #Adding carousel
+        dbc.Carousel(
+            items=[
+                {"key": "1", "src": "assets/Slides/1.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "2", "src": "assets/Slides/2.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "3", "src": "assets/Slides/3.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "4", "src": "assets/Slides/4.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "5", "src": "assets/Slides/5.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "6", "src": "assets/Slides/6.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "7", "src": "assets/Slides/7.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "8", "src": "assets/Slides/8.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "9", "src": "assets/Slides/9.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "10", "src": "assets/Slides/10.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "11", "src": "assets/Slides/11.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+                {"key": "12", "src": "assets/Slides/12.png", "img_style": {"max-width": "800px","max-height": "900px","width": "auto","height": "auto"}},
+            ],
+        className="d-flex justify-content-center"
+        )
     ])
 
 # Callback for song recommendations
 @app.callback(
-    Output("recommendations", "children"),
-    [Input("recommend_button", "n_clicks")],
-    [State("song_input", "value"),
-    State("artist_input", "value")]
+    Output('recommendations', 'children'),
+    [
+        Input('recommend_button', 'n_clicks'),
+        Input({'type': 'song-choice', 'index': ALL}, 'n_clicks'),
+        Input('song_input', 'value'),
+        Input('artist_input', 'value')
+    ],
+    [
+        State({'type': 'song-choice', 'index': ALL}, 'id'),
+        State('song_input', 'value'),
+        State('artist_input', 'value')
+    ],
+    prevent_initial_call=True,
+    allow_duplicate=True
 )
+def handle_all_triggers(n_clicks, song_choice_n_clicks, song_input, artist_input, song_choice_ids, song_input_state, artist_input_state):
+    ctx = callback_context
+    if not ctx.triggered:
+        return ""
+    trigger_prop = ctx.triggered[0]['prop_id']
+    trigger_id = trigger_prop.split('.')[0]
 
-def update_recommendations(n_clicks, song_name, artist_name):
-    if not n_clicks or not song_name:
-        return html.P("Please enter a song and artist.")
+    # **Clear output on input change**
+    if trigger_id in ['song_input', 'artist_input']:
+        return ""
 
-    message_components = []
+    # **Handle user clicking a song option button**
+    if 'song-choice' in trigger_id:
+        for n, id_dict in zip(n_clicks, ids):
+            if n and n > 0:
+                selected_song = id_dict['index']
+                recs_result = recommend_song(selected_song)
+                if isinstance(recs_result, dict):
+                    if recs_result.get('type') == 'recommendations':
+                        recs = recs_result.get('recommendations', [])
+                        return html.Div([
+                            html.H4("Recommendations:"),
+                            *[html.Div(f"{i+1}. {rec}") for i, rec in enumerate(recs)]
+                        ])
+        return "No recommendations available."
 
-    input_song_cleaned = full_clean_text(song_name)
-    input_artist_cleaned = full_clean_text(artist_name) if artist_name else None
+    # **Main button clicked**
+    if n_clicks:
+        # Your matching logic here
+        # For brevity, let's assume the matching logic you provided
+        input_song_cleaned = full_clean_text(song_input)
+        input_artist_cleaned = full_clean_text(artist_input) if artist_input else None
 
-    # **Step 1: If artist provided, try exact match on both**
-    if artist_name:
-        exact_match_df = df[
-            (df["track_name"].str.fullmatch(input_song_cleaned, case=False, na=False)) &
-            (df["artist_name"].str.fullmatch(input_artist_cleaned, case=False, na=False))
-        ]
-        if not exact_match_df.empty:
-            # Found exact match: generate recommendations directly
-            row = exact_match_df.iloc[0]
-            matched_song = row["track_name"]
-            matched_artist = row["artist_name"]
-            recs_result = recommend_song(matched_song, matched_artist)
-            # Display recommendations
-            if isinstance(recs_result, dict):
-                if recs_result.get('type') == 'recommendations':
-                    recs = recs_result.get('recommendations', [])
-                    return html.Div([
-                        html.H4("Recommendations:"),
-                        *[html.Div(f"{i+1}. {rec}") for i, rec in enumerate(recs)]
-                    ])
-                elif recs_result.get('type') == 'fallback':
-                    msg = recs_result.get('message', '')
-                    song = recs_result.get('matched_song', '')
-                    artist = recs_result.get('matched_artist', '')
-                    return html.Div([
-                        html.P(msg),
-                        html.P(f"Closest match: '{song}' by '{artist}'.")
-                    ])
-                elif recs_result.get('type') == 'no_match':
-                    msg = recs_result.get('message', '')
-                    return html.Div([html.P(msg)])
-            # If no special type, fallback:
-            return html.P("No recommendations available for that selection.")
-        # Else, proceed to listing options below
+        # 1. Exact match on artist+song
+        if artist_input:
+            exact_match_df = df[
+                (df["track_name"].str.fullmatch(input_song_cleaned, case=False, na=False)) &
+                (df["artist_name"].str.fullmatch(input_artist_cleaned, case=False, na=False))
+            ]
+            if not exact_match_df.empty:
+                row = exact_match_df.iloc[0]
+                matched_song = row["track_name"]
+                matched_artist = row["artist_name"]
+                recs_result = recommend_song(matched_song, matched_artist)
+                if isinstance(recs_result, dict):
+                    if recs_result.get('type') == 'recommendations':
+                        recs = recs_result.get('recommendations', [])
+                        return html.Div([
+                            html.H4("Recommendations:"),
+                            *[html.Div(f"{i+1}. {rec}") for i, rec in enumerate(recs)]
+                        ])
 
-    # **Step 2: If no exact match on song+artist or no artist provided**
-    # List all exact matched songs
-    exact_songs_df = df[df["track_name"].str.fullmatch(input_song_cleaned, case=False, na=False)]
-    if not exact_songs_df.empty:
-        message_components.append(html.P(f"Found {len(exact_songs_df)} songs with this name, were you thinking about this? Try to fill artist name for better recommendation."))
-        for _, row in exact_songs_df.iterrows():
-            song = row["track_name"]
-            artist = row["artist_name"]
-            # Create buttons for user to pick
-            message_components.append(
-                html.Button(
-                    f"{song} by {artist}",
-                    id={'type': 'song-choice', 'index': song},
-                    n_clicks=0
-                )
-            )
-        return html.Div(message_components)
-
-    # Fuzzy matching as fallback
-    all_songs = df["track_name"].dropna().tolist()
-    closest_matches = difflib.get_close_matches(input_song_cleaned, all_songs, n=5, cutoff=0.75)
-    if closest_matches:
-        message_components.append(html.P(f"Oops, we are having issue finding the exact match. Did you mean one of these {len(closest_matches)} songs below? Try to search with these."))
-        for song in closest_matches:
-            song_rows = df[df["track_name"].str.fullmatch(song, case=False, na=False)]
-            for _, row in song_rows.iterrows():
-                song_title = row["track_name"]
-                artist_name = row["artist_name"]
-                message_components.append(
+        # 2. List options for exact match on song name only
+        exact_songs_df = df[df["track_name"].str.fullmatch(input_song_cleaned, case=False, na=False)]
+        if not exact_songs_df.empty:
+            options = []
+            for _, row in exact_songs_df.iterrows():
+                options.append(
                     html.Button(
-                        f"{song_title} by {artist_name}",
-                        id={'type': 'song-choice', 'index': song_title},
+                        f"{row['track_name']} by {row['artist_name']}",
+                        id={'type': 'song-choice', 'index': row['track_name']},
                         n_clicks=0
                     )
                 )
-        return html.Div(message_components)
-    # If no matches at all
-    return html.P("No matching songs found. Please try again with a different song.")
+            return html.Div([
+                html.P(f"Found {len(exact_songs_df)} songs with same name, please try to fill with artist name for better recommendation."),
+                *options
+            ])
 
+                # 3. Fuzzy match fallback
+        all_songs = df["track_name"].dropna().tolist()
+        closest_matches = difflib.get_close_matches(input_song_cleaned, all_songs, n=5, cutoff=0.75)
+        if closest_matches:
+            options = []
+            for song in closest_matches:
+                song_rows = df[df["track_name"].str.fullmatch(song, case=False, na=False)]
+                for _, row in song_rows.iterrows():
+                    options.append(
+                        html.Button(
+                            f"{row['track_name']} by {row['artist_name']}",
+                            id={'type': 'song-choice', 'index': row['track_name']},
+                            n_clicks=0
+                        )
+                    )
+            return html.Div([
+                html.P(f"Oops, we had issue to find exact match. Did you mean one of these {len(closest_matches)} songs? Try to search with it."),
+                *options
+            ])
 
-
+        # If no matches at all
+        return html.P("Darn! No matching songs found. Please try again with a different song.")
 
 if __name__ == '__main__':
     app.run(debug=True)
